@@ -24,6 +24,27 @@ const signup = async (req, res) => {
     }
 };
 
+const signin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            throw new AppError('Email and password are required', StatusCodes.BAD_REQUEST);
+        }
+
+        const token = await UserService.signInUser({ email, password });
+        SuccessResponse.data = { token };
+        return res
+            .status(StatusCodes.OK)
+            .json(SuccessResponse);
+    } catch (error) {
+        ErrorResponse.error = error;
+        return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(ErrorResponse);
+    }
+};
+
 module.exports = {
     signup,
+    signin,
 };

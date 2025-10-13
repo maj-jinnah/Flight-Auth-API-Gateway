@@ -40,7 +40,6 @@ module.exports = (sequelize, DataTypes) => {
 
   User.beforeCreate(async (user) => {
     user.password = await bcrypt.hash(user.password, 10);
-    console.log('after hashing', user);
   });
 
   return User;
