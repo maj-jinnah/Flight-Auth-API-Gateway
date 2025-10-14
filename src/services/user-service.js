@@ -45,5 +45,28 @@ const signInUser = async (data) => {
   }
 }
 
+const isAuthenticated = async (token) => {
+  try {
+    if (!token) {
+      throw new AppError('Token not found', StatusCodes.BAD_REQUEST);
+    }
 
-module.exports = { createUser, signInUser };
+    const response = Auth.verifyToken(token);
+    if (!response) {
+      throw new AppError('Invalid token', StatusCodes.UNAUTHORIZED);
+    }
+    const user = await userRepository.getUserByEmail(response.email);
+    if (!user) {
+      throw new AppError('No user found for the given token', StatusCodes.NOT_FOUND);
+    }
+    return user;
+
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(error.message, StatusCodes.UNAUTHORIZED);
+  }
+}
+
+module.exports = { createUser, signInUser, isAuthenticated };

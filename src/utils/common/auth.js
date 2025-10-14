@@ -9,6 +9,15 @@ const createToken = (data) =>{
     }
 }
 
+const verifyToken = (token) => {
+    try {
+        return jwt.verify(token, ServerConfig.JWT_SECRET);
+    } catch (error) {
+        throw new Error('Error verifying token');
+    }
+}
+
 module.exports = {
     createToken,
+    verifyToken,
 }; 
