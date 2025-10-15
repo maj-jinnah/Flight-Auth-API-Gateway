@@ -44,7 +44,31 @@ const signin = async (req, res) => {
     }
 };
 
+
+const addRoleToUser = async (req, res) => {
+    try {
+        const { userId, roleName } = req.body;
+        if (!userId || !roleName) {
+            throw new AppError('Id and Role are required', StatusCodes.BAD_REQUEST);
+        }
+
+        const response = await UserService.addRoleToUser({ userId, roleName });
+        SuccessResponse.data = { response };
+        return res
+            .status(StatusCodes.OK)
+            .json(SuccessResponse);
+    } catch (error) {
+        ErrorResponse.error = error;
+        return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json(ErrorResponse);
+    }
+};
+
+
+
 module.exports = {
     signup,
     signin,
+    addRoleToUser,
 };

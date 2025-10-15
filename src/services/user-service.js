@@ -72,4 +72,44 @@ const isAuthenticated = async (token) => {
   }
 }
 
-module.exports = { createUser, signInUser, isAuthenticated };
+const addRoleToUser = async (data) =>{
+  try {
+    const user = await userRepository.findOne(data.userId);
+    if(!user){
+      throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    }
+
+    const role = await roleRepository.getRoleByName(data.roleName);
+    if(!role){
+      throw new AppError('Role not found for the user', StatusCodes.NOT_FOUND);
+    }
+    await user.addRole(role);
+
+    return user;
+  } catch (error) {
+    if(error instanceof AppError){
+      throw error;
+    }
+    throw new AppError(error.message || 'Something went wrong while adding role to user', StatusCodes.INTERNAL_SERVER_ERROR);
+  }
+}
+
+const isAdmin = async (id) =>{
+  try {
+    const user = await userRepository.findOne(id);
+    if(!user){
+      throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    }
+    const adminRole = await roleRepository.getRoleByName('admin');
+    const response = await user.hasRole(adminRole);
+    return response;
+  } catch (error) {
+    if(error instanceof AppError){
+      throw error;
+    }
+    throw new AppError(error.message || 'Something went wrong while checking admin role', StatusCodes.INTERNAL_SERVER_ERROR);
+  }
+}
+
+
+module.exports = { createUser, signInUser, isAuthenticated, addRoleToUser, isAdmin };
