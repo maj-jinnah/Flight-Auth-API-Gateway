@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const apiRoutes = require("./routes");
+const { Limiter } = require("./utils/common");
 
 const { ServerConfig, Logger } = require("./config");
 
@@ -9,7 +10,8 @@ const app = express();
 app.use([
     morgan("dev"),
     express.json(),
-    express.urlencoded({ extended: true })
+    express.urlencoded({ extended: true }),
+    Limiter
 ]);
 
 app.use("/api", apiRoutes);
